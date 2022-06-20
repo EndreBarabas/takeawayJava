@@ -10,27 +10,80 @@ import org.junit.jupiter.api.Disabled;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import java.util.HashMap;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 class MainTest {
-    HashMap<String, Integer> testMenu = new HashMap<String, Integer>();
-    public void fillUpList(){
-        testMenu.put("Pizza", 11);
-        testMenu.put("Pasta", 8);
-        testMenu.put("Burger", 14);
-        testMenu.put("Steak", 12);
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+    private final PrintStream originalOut = System.out;
+    private final PrintStream originalErr = System.err;
+
+    @BeforeAll
+    public void setUpstream(){
+        System.setOut(new PrintStream(outContent));
+        System.setErr(new PrintStream(errContent));
     }
 
     @Test void testDisplayMenu(){
-        fillUpList(); //@BeforeAll did not work so I am taking the easy way out
-        //Menu menu = mock(Menu.class);
-        //when(menu.list()).thenReturn([{"Pizza" = Integer.valueOf(11)}]);
-
+        //fillUpList(); //@BeforeAll did not work so I am taking the easy way out
+        // This became an integration test as I could not mock the menu
+        Menu menu = new Menu();
+        //when(menu.list()).thenReturn(HashMap<String, Integer>));
         Main main = new Main();
-        //assertEquals("---------\nOur menu:\n1. Pizza - 11£\n2. Burger - 8£\n3. Steak - 14£\n4. Pasta - 12£\n---------", main.displayMenu(testMenu));
+        originalOut = main.displayMenu(menu.list());
+        assertEquals("---------\nOur menu:\n1. Pizza - 11£\n2. Burger - 8£\n3. Steak - 14£\n4. Pasta - 12£\n5. ---------",
+         main.displayMenu(menu.list()));
+         //EZ A TESZT EGY FOS. A KUKIM BELEALL
     }
 
+    @Test void testOrderAddingPizza(){
+        Main main = new Main();
+        Menu menu = new Menu();
+        main.addDish(1, menu.list());
+        assertTrue(main.chosenDish.containsKey("Pizza"));
+        assertTrue(main.chosenDish.containsValue(10));
+    }
+
+    @Test void testOrderAddingMeatballs(){
+        Main main = new Main();
+        Menu menu = new Menu();
+        main.addDish(3, menu.list());
+        assertTrue(main.chosenDish.containsKey("Meatballs"));
+        assertTrue(main.chosenDish.containsValue(10));
+    }
+    @Test void testOrderAddingFriesRice(){
+        Main main = new Main();
+        Menu menu = new Menu();
+        main.addDish(4, menu.list());
+        main.addDish(8, menu.list());
+        assertTrue(main.chosenDish.containsKey("Fries"));
+        assertTrue(main.chosenDish.containsValue(4));
+        assertTrue(main.chosenDish.containsKey("Rice"));
+        assertTrue(main.chosenDish.containsValue(4));
+    }
+    @Test void testOrderAddingFriesRice(){
+        Main main = new Main();
+        Menu menu = new Menu();
+        main.addDish(4, menu.list());
+        main.addDish(8, menu.list());
+        assertTrue(main.chosenDish.containsKey("Fries"));
+        assertTrue(main.chosenDish.containsValue(4));
+        assertTrue(main.chosenDish.containsKey("Rice"));
+        assertTrue(main.chosenDish.containsValue(4));
+    }
+    @Test void testOrderAddingDefaultValue(){
+        Main main = new Main();
+        Menu menu = new Menu();
+        
+        assertEquals("You did not give me a valid value.", main.addDish(45, menu.list());
+        assertTrue(main.chosenDish.containsKey("Meatballs"));
+        assertTrue(main.chosenDish.containsValue(10));
+    }
     @AfterAll
-    public void emptyList(HashMap<String, Integer> testMenu){
-        testMenu.clear();
+    public void restoreStreams() {
+        System.setOut(originalOut);
+        System.setErr(originalErr);
     }
 }

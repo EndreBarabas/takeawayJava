@@ -13,3 +13,12 @@ I would like to check that the total I have been given matches the sum of the va
 As a customer
 So that I am reassured that my order will be delivered on time
 I would like to receive a text such as "Thank you! Your order was placed and will be delivered before 18:52"
+
+Goals for the day:
+1. make the timer in the text message display correctly - DONE
+2. use environment variables for: auth token, auth id and phone number - DONE(sort of)
+2. make a bigger menu - DONE
+3. just respond to yes or no - DONE (UPDATED DIFFERENTLY)
+5. clean up the while method in the main function - DONE
+4. make tests
++1. MAYBE make on order with text message
